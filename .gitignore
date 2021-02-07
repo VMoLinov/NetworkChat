@@ -6,3 +6,9 @@
 *.html
 
 out/*
+
+ChatServer/resources/
+
+*.class
+
+*.db

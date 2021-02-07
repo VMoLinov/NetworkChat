@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.stage.*;
+
 import java.io.IOException;
 
 public class NetworkClient extends Application {

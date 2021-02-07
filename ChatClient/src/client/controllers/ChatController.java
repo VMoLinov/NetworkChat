@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.*;
@@ -17,10 +18,13 @@ public class ChatController {
 
     @FXML
     private Button sendButton;
+
     @FXML
     private TextArea chatHistory;
+
     @FXML
     private TextField textField;
+
     @FXML
     private Label usernameTitle;
 
@@ -70,6 +74,14 @@ public class ChatController {
         try {
             if ("/end".equals(message)) {
                 network.sendCloseCommand();
+            }
+            if (message.startsWith("/nick")) {
+                String[] split = message.split("\\s+", 2);
+                network.ChangeUsername(split[1]);
+                if (network.getUsername().equals(split[1])) {
+                    setLabel(split[1]);
+                }
+                return;
             }
             appendMessage("Я: " + message);
             if (selectedRecipient != null) {

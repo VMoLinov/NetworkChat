@@ -2,7 +2,6 @@ package chat.handler;
 
 import chat.MyServer;
 import chat.auth.AuthService;
-import chat.auth.BaseAuthService;
 import clientserver.Command;
 import clientserver.CommandType;
 import clientserver.commands.*;
@@ -118,6 +117,17 @@ public class ClientHandler {
                     clientSocket.close();
                     break;
                 }
+                case NICK: {
+                    ChangeUsernameCommandData data = (ChangeUsernameCommandData) command.getData();
+                    if (!myServer.isUsernameBusy(data.getNewUsername())) {
+                        String message = String.format(">>> %s теперь %s <<<", data.getUsername(), data.getNewUsername());
+                        myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
+                        myServer.changeUsername(data.getUsername(), data.getNewUsername());
+                    } else {
+                        sendMessage(Command.errorCommand("Логин уже используется"));
+                    }
+                    break;
+                }
                 case PUBLIC_MESSAGE: {
                     PublicMessageCommandData data = (PublicMessageCommandData) command.getData();
                     String message = data.getMessage();
@@ -141,6 +151,10 @@ public class ClientHandler {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String newUsername) {
+        username = newUsername;
     }
 
     public void sendMessage(Command command) throws IOException {
