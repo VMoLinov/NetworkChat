@@ -12,3 +12,5 @@ ChatServer/resources/
 *.class
 
 *.db
+
+ChatClient/resources/

@@ -1,6 +1,6 @@
-package chat.auth;
+package chat.sql;
 
-public interface AuthService {
+public interface SQLService {
 
     String getUsernameByLoginAndPassword(String login, String password);
 

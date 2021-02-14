@@ -1,6 +1,6 @@
 package chat;
 
-import chat.auth.*;
+import chat.sql.*;
 import chat.handler.ClientHandler;
 import clientserver.Command;
 
@@ -11,12 +11,12 @@ import java.util.*;
 public class MyServer {
 
     private final ServerSocket serverSocket;
-    private final AuthService authService;
+    private final SQLService sqlService;
     private final List<ClientHandler> clients = new ArrayList<>();
 
     public MyServer(int port) throws IOException {
         this.serverSocket = new ServerSocket(port);
-        this.authService = new BaseAuthService();
+        this.sqlService = new BaseSQLService();
     }
 
     public void start() throws IOException {
@@ -45,8 +45,8 @@ public class MyServer {
         clientHandler.handle();
     }
 
-    public AuthService getAuthService() {
-        return authService;
+    public SQLService getAuthService() {
+        return sqlService;
     }
 
     public synchronized boolean isUsernameBusy(String clientUsername) {
@@ -100,7 +100,7 @@ public class MyServer {
         changeClientInList(username, newUsername);
         List<String> usernames = getAllUsernames();
         broadcastMessage(null, Command.updateUsersListCommand(usernames));
-        authService.changeUsernameInSQL(username, newUsername);
+        sqlService.changeUsernameInSQL(username, newUsername);
     }
 
     private void changeClientInList(String username, String newUsername) {

@@ -20,6 +20,7 @@ public class Network {
     private Socket socket;
     private String username;
     private Thread thread;
+    private String login;
 
     public Network() {
         this(SERVER_ADRESS, SERVER_PORT);
@@ -135,6 +136,14 @@ public class Network {
         return username;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     public void sendMessage(String message) throws IOException {
         sendMessage(Command.publicMessageCommand(username, message));
     }
@@ -172,6 +181,7 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            Thread.currentThread().interrupt();
             Platform.runLater(this::close);
             System.exit(2);
         }
