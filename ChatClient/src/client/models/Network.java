@@ -114,6 +114,9 @@ public class Network {
                     this.username = data.getUsername();
                     return null;
                 }
+                case NICK: {
+                    return null;
+                }
                 case AUTH_ERROR:
                 case ERROR: {
                     AuthErrorCommandData data = (AuthErrorCommandData) command.getData();
@@ -145,16 +148,21 @@ public class Network {
         sendMessage(command);
     }
 
+    public void ChangeUsername(String newUsername) throws IOException {
+        sendMessage(Command.changeUsernameCommand(username, newUsername));
+        username = newUsername;
+    }
+
     private Command readCommand() throws IOException {
-            try {
-                return (Command) dataInputStream.readObject();
-            } catch (ClassNotFoundException e) {
-                String errorMessage = "Получен неизвестный объект";
-                System.err.println(errorMessage);
-                e.printStackTrace();
-                sendMessage(Command.errorCommand(errorMessage));
-                return null;
-            }
+        try {
+            return (Command) dataInputStream.readObject();
+        } catch (ClassNotFoundException e) {
+            String errorMessage = "Получен неизвестный объект";
+            System.err.println(errorMessage);
+            e.printStackTrace();
+            sendMessage(Command.errorCommand(errorMessage));
+            return null;
+        }
     }
 
     public void sendCloseCommand() {

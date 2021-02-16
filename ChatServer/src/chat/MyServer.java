@@ -3,6 +3,7 @@ package chat;
 import chat.auth.*;
 import chat.handler.ClientHandler;
 import clientserver.Command;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -21,7 +22,7 @@ public class MyServer {
     public void start() throws IOException {
         System.out.println("Сервер запущен!");
         try {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 waitAndProcessNewClientConnection();
             }
         } catch (IOException e) {
@@ -90,6 +91,22 @@ public class MyServer {
         for (ClientHandler client : clients) {
             if (client.getUsername().equals(recipient)) {
                 client.sendMessage(command);
+                break;
+            }
+        }
+    }
+
+    public synchronized void changeUsername(String username, String newUsername) throws IOException {
+        changeClientInList(username, newUsername);
+        List<String> usernames = getAllUsernames();
+        broadcastMessage(null, Command.updateUsersListCommand(usernames));
+        authService.changeUsernameInSQL(username, newUsername);
+    }
+
+    private void changeClientInList(String username, String newUsername) {
+        for (ClientHandler client : clients) {
+            if (client.getUsername().equals(username)) {
+                client.setUsername(newUsername);
                 break;
             }
         }
