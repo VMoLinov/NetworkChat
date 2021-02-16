@@ -70,7 +70,7 @@ public class NetworkClient extends Application {
     public void openMainChatWindow() throws IOException {
         authStage.close();
         chatController.setLabel(network.getUsername());
-        chatController.setHistoryPath("ChatClient/resources/history_" + network.getLogin() + ".txt");
+        chatController.setHistory("ChatClient/resources/history_" + network.getLogin() + ".txt");
         chatController.appendHistory();
         primaryStage.show();
         primaryStage.setAlwaysOnTop(true);

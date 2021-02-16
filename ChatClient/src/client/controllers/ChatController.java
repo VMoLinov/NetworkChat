@@ -30,7 +30,7 @@ public class ChatController {
 
     private Network network;
     private String selectedRecipient;
-    private String historyPath;
+    private File history;
     private final int HISTORY_SIZE = 100;
 
     public void setLabel(String usernameTitle) {
@@ -41,8 +41,8 @@ public class ChatController {
         this.network = network;
     }
 
-    public void setHistoryPath(String historyPath) {
-        this.historyPath = historyPath;
+    public void setHistory(String history) {
+        this.history = new File (history);
     }
 
     @FXML
@@ -103,7 +103,6 @@ public class ChatController {
     }
 
     public void appendHistory() throws IOException {
-        File history = new File(historyPath);
         if (history.exists()) {
             var in = new BufferedReader(new FileReader(history));
             ArrayList<String> str = new ArrayList<>();
@@ -120,7 +119,7 @@ public class ChatController {
     }
 
     public void saveHistory() {
-        try (FileWriter writer = new FileWriter(historyPath)) {
+        try (FileWriter writer = new FileWriter(history)) {
             writer.write(chatHistory.getText());
         } catch (IOException e) {
             e.printStackTrace();
