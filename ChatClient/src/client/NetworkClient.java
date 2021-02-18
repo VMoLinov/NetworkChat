@@ -98,4 +98,8 @@ public class NetworkClient extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    public void closeRegStage() {
+        regStage.close();
+    }
 }

@@ -10,9 +10,9 @@ import java.io.IOException;
 public class AuthController {
 
     @FXML
-    public TextField loginField;
+    private TextField loginField;
     @FXML
-    public PasswordField passwordField;
+    private PasswordField passwordField;
 
     private Network network;
     private NetworkClient networkClient;

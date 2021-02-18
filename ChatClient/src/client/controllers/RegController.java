@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.io.IOException;
+
 public class RegController {
 
     @FXML
@@ -20,16 +22,27 @@ public class RegController {
     private Network network;
     private NetworkClient networkClient;
 
-    public Network getNetwork() {
-        return network;
+    @FXML
+    public void checkRegistration() throws IOException {
+        String username = usernameField.getText();
+        String login = loginField.getText();
+        String password = passwordField.getText();
+        if (username.isBlank() || login.isBlank() || password.isBlank()) {
+            NetworkClient.showErrorMessage("Ошибка авторизации", "Ошибка ввода", "Поля не должны быть пустыми");
+            return;
+        }
+        String registerErrorMessage = network.sendRegisterCommand(username, login, password);
+        if (registerErrorMessage != null) {
+            NetworkClient.showErrorMessage("Ошибка регистрации", "Что-то не то", registerErrorMessage);
+        } else {
+            network.setLogin(login);
+            networkClient.closeRegStage();
+            networkClient.openMainChatWindow();
+        }
     }
 
     public void setNetwork(Network network) {
         this.network = network;
-    }
-
-    public NetworkClient getNetworkClient() {
-        return networkClient;
     }
 
     public void setNetworkClient(NetworkClient networkClient) {

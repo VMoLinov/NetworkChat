@@ -45,7 +45,7 @@ public class MyServer {
         clientHandler.handle();
     }
 
-    public SQLService getAuthService() {
+    public SQLService getsqlService() {
         return sqlService;
     }
 

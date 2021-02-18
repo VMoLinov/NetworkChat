@@ -115,9 +115,6 @@ public class Network {
                     this.username = data.getUsername();
                     return null;
                 }
-                case NICK: {
-                    return null;
-                }
                 case AUTH_ERROR:
                 case ERROR: {
                     AuthErrorCommandData data = (AuthErrorCommandData) command.getData();
@@ -125,6 +122,33 @@ public class Network {
                 }
                 default:
                     return "Unknown type of command: " + command.getType();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    public String sendRegisterCommand(String username, String login, String password) {
+        try {
+            Command registerCommand = Command.registerCommand(username, login, password);
+            dataOutputStream.writeObject(registerCommand);
+            Command command = readCommand();
+            if (command == null) {
+                return "Read from server error";
+            }
+            switch (command.getType()) {
+                case REG_OK: {
+                    RegisterOkCommandData data = (RegisterOkCommandData) command.getData();
+                    this.username = data.getUsername();
+                    return null;
+                }
+                case REG_ERROR: {
+                    RegisterErrorCommandData data = (RegisterErrorCommandData) command.getData();
+                    return data.getErrorMessage();
+                }
+                default:
+                    return "Unknown type of error: " + command.getType();
             }
         } catch (IOException e) {
             e.printStackTrace();

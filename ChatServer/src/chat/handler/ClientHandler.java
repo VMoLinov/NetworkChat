@@ -63,9 +63,12 @@ public class ClientHandler {
                 if (isSuccessAuth) {
                     break;
                 }
-            } else {
-                sendMessage(Command.authErrorCommand("Ошибка авторизации"));
-            }
+            } else if (command.getType() == CommandType.REG) {
+                boolean isSuccessReg = processRegCommand(command);
+                if (isSuccessReg) {
+                    break;
+                }
+            } else sendMessage(Command.authErrorCommand("Ошибка авторизации"));
         }
     }
 
@@ -73,7 +76,7 @@ public class ClientHandler {
         AuthCommandData cmdData = (AuthCommandData) command.getData();
         String login = cmdData.getLogin();
         String password = cmdData.getPassword();
-        SQLService sqlService = myServer.getAuthService();
+        SQLService sqlService = myServer.getsqlService();
         this.username = sqlService.getUsernameByLoginAndPassword(login, password);
         if (username != null) {
             if (myServer.isUsernameBusy(username)) {
@@ -87,6 +90,25 @@ public class ClientHandler {
             return true;
         } else {
             sendMessage(Command.authErrorCommand("Логин или пароль не соответствуют действительности"));
+            return false;
+        }
+    }
+
+    private boolean processRegCommand(Command command) throws IOException {
+        RegisterCommandData cmdData = (RegisterCommandData) command.getData();
+        String username = cmdData.getUsername();
+        String login = cmdData.getLogin();
+        String password = cmdData.getPassword();
+        SQLService sqlService = myServer.getsqlService();
+        if (sqlService.insertNewUser(username, login, password)) {
+            this.username = username;
+            sendMessage(Command.registerOkCommand(username));
+            String message = String.format(">>> %s join chat", username);
+            myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
+            myServer.subscribe(this);
+            return true;
+        } else {
+            sendMessage(Command.registerErrorCommand("Login already exists"));
             return false;
         }
     }
