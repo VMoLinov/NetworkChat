@@ -18,6 +18,11 @@ public class AuthController {
     private NetworkClient networkClient;
 
     @FXML
+    public void register() throws IOException {
+        networkClient.openRegisterWindow();
+    }
+
+    @FXML
     public void checkAuth() throws IOException {
         String login = loginField.getText();
         String password = passwordField.getText();
