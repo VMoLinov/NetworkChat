@@ -1,8 +1,8 @@
-package chat.auth;
+package chat.sql;
 
 import java.sql.*;
 
-public class BaseAuthService implements AuthService {
+public class BaseSQLService implements SQLService {
 
     private static Connection connection;
     private static Statement stmt;

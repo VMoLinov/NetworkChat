@@ -53,7 +53,10 @@ public class NetworkClient extends Application {
         primaryStage.setScene(new Scene(root, 600, 400));
         chatController = loader.getController();
         chatController.setNetwork(network);
-        primaryStage.setOnCloseRequest(windowEvent -> network.sendCloseCommand());
+        primaryStage.setOnCloseRequest(windowEvent -> {
+            chatController.saveHistory();
+            network.sendCloseCommand();
+        });
     }
 
     public static void showErrorMessage(String title, String message, String errorMessage) {
@@ -64,9 +67,11 @@ public class NetworkClient extends Application {
         alert.showAndWait();
     }
 
-    public void openMainChatWindow() {
+    public void openMainChatWindow() throws IOException {
         authStage.close();
         chatController.setLabel(network.getUsername());
+        chatController.setHistory("ChatClient/resources/history_" + network.getLogin() + ".txt");
+        chatController.appendHistory();
         primaryStage.show();
         primaryStage.setAlwaysOnTop(true);
         network.waitMessage(chatController);

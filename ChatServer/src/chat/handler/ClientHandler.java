@@ -1,7 +1,7 @@
 package chat.handler;
 
 import chat.MyServer;
-import chat.auth.AuthService;
+import chat.sql.SQLService;
 import clientserver.Command;
 import clientserver.CommandType;
 import clientserver.commands.*;
@@ -73,8 +73,8 @@ public class ClientHandler {
         AuthCommandData cmdData = (AuthCommandData) command.getData();
         String login = cmdData.getLogin();
         String password = cmdData.getPassword();
-        AuthService authService = myServer.getAuthService();
-        this.username = authService.getUsernameByLoginAndPassword(login, password);
+        SQLService sqlService = myServer.getAuthService();
+        this.username = sqlService.getUsernameByLoginAndPassword(login, password);
         if (username != null) {
             if (myServer.isUsernameBusy(username)) {
                 sendMessage(Command.authErrorCommand("Логин уже используется"));

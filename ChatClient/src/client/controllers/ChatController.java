@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -30,6 +30,8 @@ public class ChatController {
 
     private Network network;
     private String selectedRecipient;
+    private File history;
+    private final int HISTORY_SIZE = 100;
 
     public void setLabel(String usernameTitle) {
         this.usernameTitle.setText(usernameTitle);
@@ -37,6 +39,10 @@ public class ChatController {
 
     public void setNetwork(Network network) {
         this.network = network;
+    }
+
+    public void setHistory(String history) {
+        this.history = new File (history);
     }
 
     @FXML
@@ -73,6 +79,7 @@ public class ChatController {
         textField.clear();
         try {
             if ("/end".equals(message)) {
+                saveHistory();
                 network.sendCloseCommand();
             }
             if (message.startsWith("/nick")) {
@@ -92,6 +99,30 @@ public class ChatController {
         } catch (IOException e) {
             e.printStackTrace();
             NetworkClient.showErrorMessage("Ошибка подключения", "Ошибка при отправке сообщения", e.getMessage());
+        }
+    }
+
+    public void appendHistory() throws IOException {
+        if (history.exists()) {
+            var in = new BufferedReader(new FileReader(history));
+            ArrayList<String> str = new ArrayList<>();
+            String line;
+            while ((line = in.readLine()) != null) {
+                str.add(line + System.lineSeparator());
+            }
+            int lines = Math.min(str.size(), HISTORY_SIZE);
+            for (int i = 0; i < lines; i++) {
+                chatHistory.appendText(str.get(i));
+            }
+            in.close();
+        } else history.createNewFile();
+    }
+
+    public void saveHistory() {
+        try (FileWriter writer = new FileWriter(history)) {
+            writer.write(chatHistory.getText());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
