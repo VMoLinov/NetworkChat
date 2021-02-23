@@ -7,9 +7,12 @@ import clientserver.Command;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MyServer {
 
+    public static final Logger LOGGER = Logger.getLogger("Server");
     private final ServerSocket serverSocket;
     private final SQLService sqlService;
     private final List<ClientHandler> clients = new ArrayList<>();
@@ -20,13 +23,13 @@ public class MyServer {
     }
 
     public void start() throws IOException {
-        System.out.println("Сервер запущен!");
+        LOGGER.log(Level.INFO, "Server running");
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 waitAndProcessNewClientConnection();
             }
         } catch (IOException e) {
-            System.out.println("Ошибка создания нового подключения");
+            LOGGER.log(Level.WARNING, "Connection error");
             e.printStackTrace();
         } finally {
             serverSocket.close();
@@ -34,9 +37,9 @@ public class MyServer {
     }
 
     private void waitAndProcessNewClientConnection() throws IOException {
-        System.out.println("Ожидание пользователя...");
+        LOGGER.log(Level.INFO, "Waiting for user");
         Socket clientSocket = serverSocket.accept();
-        System.out.println("Клиент подключился!");
+        LOGGER.log(Level.INFO, "Client connected");
         processClientConnection(clientSocket);
     }
 

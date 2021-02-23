@@ -1,6 +1,7 @@
 import chat.MyServer;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class ServerApp {
 
@@ -16,8 +17,7 @@ public class ServerApp {
         try {
             new MyServer(port).start();
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Ошибка!");
+            MyServer.LOGGER.log(Level.WARNING, "Error!");
             System.exit(1);
         }
     }
