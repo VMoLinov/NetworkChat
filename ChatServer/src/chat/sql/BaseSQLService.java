@@ -31,6 +31,21 @@ public class BaseSQLService implements SQLService {
     }
 
     @Override
+    public boolean insertNewUser(String username, String login, String password) {
+        try {
+            start();
+            return 0 < stmt.executeUpdate(String.format("INSERT INTO users (username, login, password) " +
+                    "VALUES ('%s', '%s', '%s')", username, login, password));
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            close();
+        }
+    }
+
+    @Override
     public void changeUsernameInSQL(String username, String newUsername) {
         try {
             start();

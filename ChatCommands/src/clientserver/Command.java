@@ -39,6 +39,27 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command registerCommand(String username, String login, String password) {
+        Command command = new Command();
+        command.type = CommandType.REG;
+        command.data = new RegisterCommandData(username, login, password);
+        return command;
+    }
+
+    public static Command registerOkCommand(String username) {
+        Command command = new Command();
+        command.type = CommandType.REG_OK;
+        command.data = new RegisterOkCommandData(username);
+        return command;
+    }
+
+    public static Command registerErrorCommand(String errorMessage) {
+        Command command = new Command();
+        command.type = CommandType.REG_ERROR;
+        command.data = new RegisterErrorCommandData(errorMessage);
+        return command;
+    }
+
     public static Command errorCommand(String errorMessage) {
         Command command = new Command();
         command.type = CommandType.ERROR;

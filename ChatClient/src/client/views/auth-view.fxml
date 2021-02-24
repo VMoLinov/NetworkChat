@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="318.0" prefWidth="495.0" xmlns="http://javafx.com/javafx/11.0.1"
+<AnchorPane prefHeight="318.0" prefWidth="495.0" xmlns="http://javafx.com/javafx/15.0.1"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.AuthController">
     <children>
         <TextField fx:id="loginField" layoutX="161.0" layoutY="60.0">
@@ -27,7 +27,14 @@
                 <Font size="24.0"/>
             </font>
         </Label>
-        <Button layoutX="196.0" layoutY="258.0" mnemonicParsing="false" onAction="#checkAuth" text="Sign in">
+        <Button defaultButton="true" layoutX="258.0" layoutY="258.0" mnemonicParsing="false" onAction="#checkAuth"
+                prefWidth="120.0" text="Sign in" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="100.0">
+            <font>
+                <Font size="24.0"/>
+            </font>
+        </Button>
+        <Button layoutX="87.0" layoutY="258.0" mnemonicParsing="false" onAction="#register" prefWidth="120.0"
+                text="Register" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="100.0">
             <font>
                 <Font size="24.0"/>
             </font>

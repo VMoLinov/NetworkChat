@@ -14,6 +14,7 @@ public class NetworkClient extends Application {
 
     private Stage primaryStage;
     private Stage authStage;
+    private Stage regStage;
     private Network network;
     private ChatController chatController;
 
@@ -67,6 +68,23 @@ public class NetworkClient extends Application {
         alert.showAndWait();
     }
 
+    public void openRegisterWindow() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(NetworkClient.class.getResource("views/reg-view.fxml"));
+        Parent root = loader.load();
+        regStage = new Stage();
+        regStage.setTitle("Registration");
+        regStage.initModality(Modality.WINDOW_MODAL);
+        regStage.initOwner(primaryStage);
+        Scene scene = new Scene(root);
+        regStage.setScene(scene);
+        authStage.close();
+        regStage.show();
+        RegController regController = loader.getController();
+        regController.setNetwork(network);
+        regController.setNetworkClient(this);
+    }
+
     public void openMainChatWindow() throws IOException {
         authStage.close();
         chatController.setLabel(network.getUsername());
@@ -79,5 +97,9 @@ public class NetworkClient extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void closeRegStage() {
+        regStage.close();
     }
 }
