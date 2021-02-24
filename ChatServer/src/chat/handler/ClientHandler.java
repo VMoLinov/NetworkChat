@@ -34,7 +34,7 @@ public class ClientHandler {
             public void run() {
                 if (username == null) {
                     try {
-                        MyServer.LOGGER.log(Level.INFO, "Disconnect from timeout");
+//                        MyServer.LOGGER.log(Level.INFO, "Disconnect from timeout");
                         clientSocket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -71,7 +71,7 @@ public class ClientHandler {
                 }
             } else {
                 sendMessage(Command.authErrorCommand("Ошибка авторизации"));
-                MyServer.LOGGER.log(Level.WARNING, "Authorisation error");
+//                MyServer.LOGGER.log(Level.WARNING, "Authorisation error");
             }
         }
     }
@@ -85,18 +85,18 @@ public class ClientHandler {
         if (username != null) {
             if (myServer.isUsernameBusy(username)) {
                 sendMessage(Command.authErrorCommand("Логин уже используется"));
-                MyServer.LOGGER.log(Level.INFO, "Login already exists");
+//                MyServer.LOGGER.log(Level.INFO, "Login already exists");
                 return false;
             }
             sendMessage(Command.authOkCommand(username));
             String message = String.format(">>> %s присоединился к чату", username);
-            MyServer.LOGGER.log(Level.INFO, String.format("%s join", username));
+//            MyServer.LOGGER.log(Level.INFO, String.format("%s join", username));
             myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
             myServer.subscribe(this);
             return true;
         } else {
             sendMessage(Command.authErrorCommand("Логин или пароль не соответствуют действительности"));
-            MyServer.LOGGER.log(Level.INFO, "Login or password incorrect");
+//            MyServer.LOGGER.log(Level.INFO, "Login or password incorrect");
             return false;
         }
     }
@@ -111,13 +111,13 @@ public class ClientHandler {
             this.username = username;
             sendMessage(Command.registerOkCommand(username));
             String message = String.format(">>> %s join chat", username);
-            MyServer.LOGGER.log(Level.INFO, String.format("%s join", username));
+//            MyServer.LOGGER.log(Level.INFO, String.format("%s join", username));
             myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
             myServer.subscribe(this);
             return true;
         } else {
             sendMessage(Command.registerErrorCommand("Login already exists"));
-            MyServer.LOGGER.log(Level.INFO, "Login already exists");
+//            MyServer.LOGGER.log(Level.INFO, "Login already exists");
             return false;
         }
     }
@@ -126,7 +126,7 @@ public class ClientHandler {
         try {
             return (Command) in.readObject();
         } catch (ClassNotFoundException e) {
-            MyServer.LOGGER.log(Level.WARNING, "Unknown command");
+//            MyServer.LOGGER.log(Level.WARNING, "Unknown command");
             return null;
         }
     }
@@ -141,7 +141,7 @@ public class ClientHandler {
                 case END: {
                     EndCommandData data = (EndCommandData) command.getData();
                     String message = String.format(">>> %s вышел из чата", data.getUsername());
-                    MyServer.LOGGER.log(Level.INFO, String.format("%s exit", data.getUsername()));
+//                    MyServer.LOGGER.log(Level.INFO, String.format("%s exit", data.getUsername()));
                     myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
                     myServer.unSubscribe(this);
                     clientSocket.close();
@@ -151,12 +151,12 @@ public class ClientHandler {
                     ChangeUsernameCommandData data = (ChangeUsernameCommandData) command.getData();
                     if (!myServer.isUsernameBusy(data.getNewUsername())) {
                         String message = String.format(">>> %s теперь %s <<<", data.getUsername(), data.getNewUsername());
-                        MyServer.LOGGER.log(Level.INFO, String.format("%s change nick to %s", data.getNewUsername(), data.getNewUsername()));
+//                        MyServer.LOGGER.log(Level.INFO, String.format("%s change nick to %s", data.getNewUsername(), data.getNewUsername()));
                         myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
                         myServer.changeUsername(data.getUsername(), data.getNewUsername());
                     } else {
                         sendMessage(Command.errorCommand("Логин уже используется"));
-                        MyServer.LOGGER.log(Level.INFO, "Login already exists");
+//                        MyServer.LOGGER.log(Level.INFO, "Login already exists");
                     }
                     break;
                 }
@@ -175,7 +175,7 @@ public class ClientHandler {
                     break;
                 default:
                     String errorMessage = "Неизвестный тип команды" + command.getType();
-                    MyServer.LOGGER.log(Level.WARNING, "Unknown command");
+//                    MyServer.LOGGER.log(Level.WARNING, "Unknown command");
                     sendMessage(Command.errorCommand(errorMessage));
             }
         }

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class MyServer {
 
-    public static final Logger LOGGER = Logger.getLogger("Server");
+//    public static final Logger LOGGER = Logger.getLogger("Server");
     private final ServerSocket serverSocket;
     private final SQLService sqlService;
     private final List<ClientHandler> clients = new ArrayList<>();
@@ -23,13 +23,13 @@ public class MyServer {
     }
 
     public void start() throws IOException {
-        LOGGER.log(Level.INFO, "Server running");
+//        LOGGER.log(Level.INFO, "Server running");
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 waitAndProcessNewClientConnection();
             }
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Connection error");
+//            LOGGER.log(Level.WARNING, "Connection error");
             e.printStackTrace();
         } finally {
             serverSocket.close();
@@ -37,9 +37,9 @@ public class MyServer {
     }
 
     private void waitAndProcessNewClientConnection() throws IOException {
-        LOGGER.log(Level.INFO, "Waiting for user");
+//        LOGGER.log(Level.INFO, "Waiting for user");
         Socket clientSocket = serverSocket.accept();
-        LOGGER.log(Level.INFO, "Client connected");
+//        LOGGER.log(Level.INFO, "Client connected");
         processClientConnection(clientSocket);
     }
 
