@@ -33,7 +33,7 @@ public class ClientHandler {
             public void run() {
                 if (username == null) {
                     try {
-                        System.out.println("Превышено время ожидания. Соединение разорвано");
+                        MyServer.LOGGER.info("Disconnect from timeout");
                         clientSocket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -68,7 +68,10 @@ public class ClientHandler {
                 if (isSuccessReg) {
                     break;
                 }
-            } else sendMessage(Command.authErrorCommand("Ошибка авторизации"));
+            } else {
+                sendMessage(Command.authErrorCommand("Ошибка авторизации"));
+                MyServer.LOGGER.warn("Authorisation error");
+            }
         }
     }
 
@@ -81,15 +84,18 @@ public class ClientHandler {
         if (username != null) {
             if (myServer.isUsernameBusy(username)) {
                 sendMessage(Command.authErrorCommand("Логин уже используется"));
+                MyServer.LOGGER.info("Login already exists");
                 return false;
             }
             sendMessage(Command.authOkCommand(username));
             String message = String.format(">>> %s присоединился к чату", username);
+            MyServer.LOGGER.info(String.format("%s join", username));
             myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
             myServer.subscribe(this);
             return true;
         } else {
             sendMessage(Command.authErrorCommand("Логин или пароль не соответствуют действительности"));
+            MyServer.LOGGER.info("Login or password incorrect");
             return false;
         }
     }
@@ -104,11 +110,13 @@ public class ClientHandler {
             this.username = username;
             sendMessage(Command.registerOkCommand(username));
             String message = String.format(">>> %s join chat", username);
+            MyServer.LOGGER.info(String.format("%s join", username));
             myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
             myServer.subscribe(this);
             return true;
         } else {
             sendMessage(Command.registerErrorCommand("Login already exists"));
+            MyServer.LOGGER.info("Login already exists");
             return false;
         }
     }
@@ -117,9 +125,7 @@ public class ClientHandler {
         try {
             return (Command) in.readObject();
         } catch (ClassNotFoundException e) {
-            String errorMessage = "Получен неизвестный объект";
-            System.err.println(errorMessage);
-            e.printStackTrace();
+            MyServer.LOGGER.warn("Unknown command");
             return null;
         }
     }
@@ -134,6 +140,7 @@ public class ClientHandler {
                 case END: {
                     EndCommandData data = (EndCommandData) command.getData();
                     String message = String.format(">>> %s вышел из чата", data.getUsername());
+                    MyServer.LOGGER.info(String.format("%s exit", data.getUsername()));
                     myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
                     myServer.unSubscribe(this);
                     clientSocket.close();
@@ -143,10 +150,12 @@ public class ClientHandler {
                     ChangeUsernameCommandData data = (ChangeUsernameCommandData) command.getData();
                     if (!myServer.isUsernameBusy(data.getNewUsername())) {
                         String message = String.format(">>> %s теперь %s <<<", data.getUsername(), data.getNewUsername());
+                        MyServer.LOGGER.info(String.format("%s change nick to %s", data.getNewUsername(), data.getNewUsername()));
                         myServer.broadcastMessage(this, Command.messageInfoCommand(message, null));
                         myServer.changeUsername(data.getUsername(), data.getNewUsername());
                     } else {
                         sendMessage(Command.errorCommand("Логин уже используется"));
+                        MyServer.LOGGER.info("Login already exists");
                     }
                     break;
                 }
@@ -154,6 +163,7 @@ public class ClientHandler {
                     PublicMessageCommandData data = (PublicMessageCommandData) command.getData();
                     String message = data.getMessage();
                     String sender = data.getSender();
+                    MyServer.LOGGER.info(String.format("%s send public message: %s", data.getSender(), data.getMessage()));
                     myServer.broadcastMessage(this, Command.messageInfoCommand(message, sender));
                     break;
                 }
@@ -161,11 +171,12 @@ public class ClientHandler {
                     PrivateMessageCommandData data = (PrivateMessageCommandData) command.getData();
                     String recipient = data.getReceiver();
                     String message = data.getMessage();
+                    MyServer.LOGGER.info(String.format("%s send private message to %s: %s", username, data.getReceiver(), data.getMessage()));
                     myServer.sendPrivateMessage(recipient, Command.messageInfoCommand(message, username));
                     break;
                 default:
                     String errorMessage = "Неизвестный тип команды" + command.getType();
-                    System.err.println(errorMessage);
+                    MyServer.LOGGER.warn("Unknown command");
                     sendMessage(Command.errorCommand(errorMessage));
             }
         }

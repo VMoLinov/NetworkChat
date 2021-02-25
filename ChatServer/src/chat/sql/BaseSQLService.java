@@ -1,5 +1,7 @@
 package chat.sql;
 
+import chat.MyServer;
+
 import java.sql.*;
 
 public class BaseSQLService implements SQLService {
@@ -23,7 +25,7 @@ public class BaseSQLService implements SQLService {
                 return rs.getString("username");
             }
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            MyServer.LOGGER.warn("Authorisation SQL error");
         } finally {
             close();
         }
@@ -37,7 +39,7 @@ public class BaseSQLService implements SQLService {
             return 0 < stmt.executeUpdate(String.format("INSERT INTO users (username, login, password) " +
                     "VALUES ('%s', '%s', '%s')", username, login, password));
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            MyServer.LOGGER.warn("Registration SQL error");
             return false;
         }
         finally {
@@ -51,7 +53,7 @@ public class BaseSQLService implements SQLService {
             start();
             stmt.executeUpdate(String.format("UPDATE users SET username = '%s' WHERE username = '%s'", newUsername, username));
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            MyServer.LOGGER.warn("Change username SQL error");
         } finally {
             close();
         }

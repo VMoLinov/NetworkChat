@@ -3,6 +3,7 @@ package chat;
 import chat.sql.*;
 import chat.handler.ClientHandler;
 import clientserver.Command;
+import org.apache.logging.log4j.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -10,6 +11,7 @@ import java.util.*;
 
 public class MyServer {
 
+    public static final Logger LOGGER = LogManager.getLogger(MyServer.class.getName());
     private final ServerSocket serverSocket;
     private final SQLService sqlService;
     private final List<ClientHandler> clients = new ArrayList<>();
@@ -20,23 +22,22 @@ public class MyServer {
     }
 
     public void start() throws IOException {
-        System.out.println("Сервер запущен!");
+        LOGGER.info("Server running");
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 waitAndProcessNewClientConnection();
             }
         } catch (IOException e) {
-            System.out.println("Ошибка создания нового подключения");
-            e.printStackTrace();
+            LOGGER.warn("Connection error");
         } finally {
             serverSocket.close();
         }
     }
 
     private void waitAndProcessNewClientConnection() throws IOException {
-        System.out.println("Ожидание пользователя...");
+        LOGGER.info("Waiting for user");
         Socket clientSocket = serverSocket.accept();
-        System.out.println("Клиент подключился!");
+        LOGGER.info("Client connected");
         processClientConnection(clientSocket);
     }
 
