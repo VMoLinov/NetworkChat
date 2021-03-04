@@ -20,6 +20,12 @@ public class ChatController {
     private Button sendButton;
 
     @FXML
+    private Button nameButton;
+
+    @FXML
+    private Button exitButton;
+
+    @FXML
     private TextArea chatHistory;
 
     @FXML
@@ -27,6 +33,9 @@ public class ChatController {
 
     @FXML
     private Label usernameTitle;
+
+    @FXML
+    private ComboBox usersListContext;
 
     private Network network;
     private String selectedRecipient;
@@ -42,13 +51,18 @@ public class ChatController {
     }
 
     public void setHistory(String history) {
-        this.history = new File (history);
+        this.history = new File(history);
     }
 
     @FXML
     public void initialize() {
         sendButton.setOnAction(event -> ChatController.this.sendMessage());
+        nameButton.setOnAction(event -> ChatController.this.changeName());
         textField.setOnAction(event -> ChatController.this.sendMessage());
+        exitButton.setOnAction(event -> {
+            ChatController.this.saveHistory();
+            network.sendCloseCommand();
+        });
         usersList.setCellFactory(lv -> {
             MultipleSelectionModel<String> selectionModel = usersList.getSelectionModel();
             ListCell<String> cell = new ListCell<>();
@@ -77,23 +91,18 @@ public class ChatController {
             return;
         }
         textField.clear();
+        String selectedRecipientBox = String.valueOf(usersListContext.getValue());
         try {
-            if ("/end".equals(message)) {
-                saveHistory();
-                network.sendCloseCommand();
-            }
-            if (message.startsWith("/nick")) {
-                String[] split = message.split("\\s+", 2);
-                network.ChangeUsername(split[1]);
-                if (network.getUsername().equals(split[1])) {
-                    setLabel(split[1]);
-                }
-                return;
-            }
-            appendMessage("Я: " + message);
-            if (selectedRecipient != null) {
+            if (!selectedRecipientBox.equals("Public message") && selectedRecipient != null) {
+                NetworkClient.showErrorMessage("Ошибка отправки", "Ошибка при отправке сообщения", "Выберите одного получателя");
+            } else if (!selectedRecipientBox.equals("Public message")) {
+                appendMessage("Я: " + message);
+                network.sendPrivateMessage(message, selectedRecipientBox);
+            } else if (selectedRecipient != null) {
+                appendMessage("Я: " + message);
                 network.sendPrivateMessage(message, selectedRecipient);
             } else {
+                appendMessage("Я: " + message);
                 network.sendMessage(message);
             }
         } catch (IOException e) {
@@ -137,5 +146,26 @@ public class ChatController {
 
     public void updateUsers(List<String> users) {
         usersList.setItems(FXCollections.observableArrayList(users));
+        users.remove(network.getUsername());
+        users.add("Public message");
+        usersListContext.setItems(FXCollections.observableArrayList(users));
+        usersListContext.setValue("Public message");
+    }
+
+    public void changeName() {
+        String newUsername = textField.getText();
+        if (newUsername.isBlank() || newUsername.equals(network.getUsername())) {
+            NetworkClient.showErrorMessage("Ошибка смены ника", "Введите новый ник", "Новый ник не может быть пустым");
+            return;
+        }
+        textField.clear();
+        try {
+            network.ChangeUsername(newUsername);
+            if (network.getUsername().equals(newUsername)) {
+                setLabel(newUsername);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

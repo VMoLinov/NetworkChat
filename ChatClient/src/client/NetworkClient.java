@@ -91,7 +91,6 @@ public class NetworkClient extends Application {
         chatController.setHistory("ChatClient/resources/history_" + network.getLogin() + ".txt");
         chatController.appendHistory();
         primaryStage.show();
-        primaryStage.setAlwaysOnTop(true);
         network.waitMessage(chatController);
     }
 
